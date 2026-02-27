@@ -40,7 +40,7 @@ import db from "../db.server";
 //
 // null  →  ignore this event (no meaningful Shopify status to record)
 
-const SHIPPO_STATUS_MAP: Record<string, string | null> = {
+export const SHIPPO_STATUS_MAP: Record<string, string | null> = {
   UNKNOWN: null,
   PRE_TRANSIT: "LABEL_PURCHASED", // Label bought, carrier not yet holding it
   TRANSIT: "IN_TRANSIT",
@@ -58,7 +58,7 @@ const TRANSIT_DETAIL_MAP: Array<[RegExp, string]> = [
   [/carrier.?picked.?up|picked.?up.?by/i, "CONFIRMED"],
 ];
 
-function refineTransitStatus(statusDetails: string): string {
+export function refineTransitStatus(statusDetails: string): string {
   for (const [pattern, shopifyStatus] of TRANSIT_DETAIL_MAP) {
     if (pattern.test(statusDetails)) return shopifyStatus;
   }
@@ -72,7 +72,7 @@ function refineTransitStatus(statusDetails: string): string {
 //   Format: t=<unix_timestamp>,v1=<hmac_sha256_hex>
 //   Signed string: "<timestamp>.<raw_body>"
 
-function validateShippoSignature(
+export function validateShippoSignature(
   rawBody: string,
   signatureHeader: string,
   secret: string

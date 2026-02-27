@@ -176,7 +176,7 @@ const ORDERS_QUERY = `#graphql
  * Admin API.  When no events are present we fall back to inferring status
  * from the existence of a tracking number.
  */
-function resolveShipmentStatus(order: Record<string, any>): ShipmentStatus {
+export function resolveShipmentStatus(order: Record<string, any>): ShipmentStatus {
   const displayStatus: string = order.displayFulfillmentStatus ?? "";
 
   // Orders that haven't entered the fulfillment workflow at all
@@ -249,7 +249,7 @@ function resolveShipmentStatus(order: Record<string, any>): ShipmentStatus {
  *   1. Customer paid for shipping (any non-zero shipping line cost), OR
  *   2. Order originated from Amazon (tag or channel name contains "amazon").
  */
-function resolvePriority(
+export function resolvePriority(
   order: Record<string, any>
 ): { isPriority: boolean; reason: string } {
   // --- Paid shipping check ---
@@ -285,7 +285,7 @@ function resolvePriority(
 }
 
 /** ISO date string → compact relative label ("2h ago", "3d ago") */
-function timeAgo(iso: string): string {
+export function timeAgo(iso: string): string {
   const ms = Date.now() - new Date(iso).getTime();
   const mins = Math.floor(ms / 60_000);
   const hours = Math.floor(mins / 60);
@@ -295,7 +295,7 @@ function timeAgo(iso: string): string {
   return `${Math.max(1, mins)}m ago`;
 }
 
-function formatCurrency(amount: number, currency: string): string {
+export function formatCurrency(amount: number, currency: string): string {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
     currency,
