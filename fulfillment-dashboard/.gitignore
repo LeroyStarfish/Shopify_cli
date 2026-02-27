@@ -1,0 +1,9 @@
+node_modules
+.DS_Store
+/build
+/public/build
+.cache
+.env
+*.db
+*.db-journal
+/prisma/migrations

@@ -1,0 +1,24 @@
+name = "Fulfillment Dashboard"
+client_id = "YOUR_CLIENT_ID"
+application_url = "https://YOUR_APP_URL.vercel.app"
+embedded = true
+
+[build]
+include_config_on_deploy = true
+
+[access_scopes]
+# Orders and fulfillment are read-only — no write scopes needed.
+scopes = "read_orders,read_fulfillments,read_shipping"
+
+[auth]
+redirect_urls = [
+  "https://YOUR_APP_URL.vercel.app/auth/callback",
+  "https://YOUR_APP_URL.vercel.app/auth/shopify/callback",
+  "https://admin.shopify.com/oauth/redirect_from_cli"
+]
+
+[webhooks]
+api_version = "2024-10"
+
+[pos]
+embedded = false
