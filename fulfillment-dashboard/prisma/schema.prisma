@@ -27,3 +27,15 @@ model Session {
   collaborator  Boolean?  @default(false)
   emailVerified Boolean?  @default(false)
 }
+
+// Maps Shippo tracking numbers → Shopify Fulfillment GIDs so the Shippo
+// webhook handler can write FulfillmentEvents back to the right record
+// without having to query Shopify at event time.
+model TrackingRecord {
+  trackingNumber String   @id
+  shop           String
+  fulfillmentId  String   // Shopify GID  e.g. gid://shopify/Fulfillment/123
+  orderId        String   // Shopify GID  e.g. gid://shopify/Order/456
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}

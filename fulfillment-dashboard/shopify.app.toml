@@ -7,8 +7,9 @@ embedded = true
 include_config_on_deploy = true
 
 [access_scopes]
-# Orders and fulfillment are read-only — no write scopes needed.
-scopes = "read_orders,read_fulfillments,read_shipping"
+# read_orders + read_fulfillments for the dashboard.
+# write_fulfillments needed to post FulfillmentEvents back from Shippo webhooks.
+scopes = "read_orders,read_fulfillments,read_shipping,write_fulfillments"
 
 [auth]
 redirect_urls = [
@@ -19,6 +20,14 @@ redirect_urls = [
 
 [webhooks]
 api_version = "2024-10"
+
+  # Shopify fires this every time a fulfillment is created (including when
+  # Shippo purchases a label and marks the order fulfilled).  We use it to
+  # store the tracking-number → Shopify-fulfillment-GID mapping in the DB
+  # so the Shippo webhook handler can look it up without a round-trip query.
+  [[webhooks.subscriptions]]
+  topics = ["fulfillments/create"]
+  uri = "/webhooks/fulfillments"
 
 [pos]
 embedded = false
