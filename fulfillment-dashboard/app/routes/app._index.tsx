@@ -191,9 +191,11 @@ export function resolveShipmentStatus(order: Record<string, any>): ShipmentStatu
   const fulfillments: any[] = order.fulfillments ?? [];
   if (fulfillments.length === 0) return "unfulfilled";
 
-  // Walk every fulfillment.  We sorted events descending so the first event
-  // in the first fulfillment is the most recent overall.
+  // Walk every fulfillment and select the most recent tracking event overall.
+  // Each fulfillment's events are sorted descending in the query, but the
+  // fulfillments array itself is not guaranteed to be globally time-sorted.
   let latestEventStatus: string | null = null;
+  let latestEventAt = Number.NEGATIVE_INFINITY;
   let hasTrackingNumber = false;
 
   for (const fulfillment of fulfillments) {
@@ -202,8 +204,17 @@ export function resolveShipmentStatus(order: Record<string, any>): ShipmentStatu
     }
 
     const events: any[] = fulfillment.events?.edges ?? [];
-    if (events.length > 0 && latestEventStatus === null) {
-      latestEventStatus = events[0].node.status;
+    if (events.length === 0) continue;
+
+    const latestEvent = events[0]?.node;
+    const eventAtMs = Date.parse(latestEvent?.happenedAt ?? "");
+
+    if (!Number.isNaN(eventAtMs) && eventAtMs > latestEventAt) {
+      latestEventAt = eventAtMs;
+      latestEventStatus = latestEvent.status;
+    } else if (Number.isNaN(eventAtMs) && latestEventStatus === null) {
+      // Fallback when happenedAt is absent/invalid: keep the first known status.
+      latestEventStatus = latestEvent?.status ?? null;
     }
   }
 

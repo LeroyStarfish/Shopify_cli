@@ -140,21 +140,20 @@ describe("resolveShipmentStatus", () => {
     expect(resolveShipmentStatus(order)).toBe("delivered");
   });
 
-  it("prefers the first fulfillment's events over later ones", () => {
-    // First fulfillment with DELIVERED takes precedence over second with IN_TRANSIT.
+  it("uses the most recent event across multiple fulfillments", () => {
     const order = {
       displayFulfillmentStatus: "FULFILLED",
       fulfillments: [
         {
           trackingInfo: [{ number: "111" }],
           events: {
-            edges: [{ node: { status: "DELIVERED", happenedAt: "2024-01-16T00:00:00Z" } }],
+            edges: [{ node: { status: "IN_TRANSIT", happenedAt: "2024-01-15T00:00:00Z" } }],
           },
         },
         {
           trackingInfo: [{ number: "222" }],
           events: {
-            edges: [{ node: { status: "IN_TRANSIT", happenedAt: "2024-01-15T00:00:00Z" } }],
+            edges: [{ node: { status: "DELIVERED", happenedAt: "2024-01-16T00:00:00Z" } }],
           },
         },
       ],
